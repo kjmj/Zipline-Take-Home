@@ -45,12 +45,9 @@
           <template x-for="result in results" :key="result">
             <div
               x-text="result"
-              @click="clicked = result; focused = false"
+              @click="showUpstreamGraph(result, $data); focused = false"
               hx-trigger="click"
-              hx-target="#mermaid-graph"
-              x-bind:hx-get="`/upstream/${result}`"
               x-init="htmx.process($el)"
-              @htmx:after-request.camel="afterRequestResult($data)"
               class="px-4 py-2 cursor-pointer hover:bg-gray-100"
             ></div>
           </template>

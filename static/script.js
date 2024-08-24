@@ -17,29 +17,29 @@ function addClickListenersToNodes(alpineData, id) {
       .forEach((node) => {
         node.style.cursor = "pointer";
         const nodeName = node.textContent.trim();
-        node.addEventListener("click", (event) => {
+        node.addEventListener("click", () => {
           if (id === "full-mermaid-graph") {
-            alpineData.clicked = nodeName;
-            htmx
-              .ajax("GET", `/upstream/${nodeName}`, "#mermaid-graph")
-              .then(() => {
-                reRenderMermaidGraph("mermaid-graph", alpineData);
-                addClickListenersToNodes(alpineData, "mermaid-graph");
-              });
+            showUpstreamGraph(nodeName, alpineData);
           } else if (id === "mermaid-graph") {
-            alpineData.nodeDetails = nodeName;
-            htmx.ajax("GET", `/nodes/${nodeName}`, "#node-details");
+            showDetailSidebar(nodeName, alpineData);
           }
         });
       });
   });
 }
 
-function afterRequestResult(alpineData) {
-  setTimeout(() => {
+function showDetailSidebar(nodeName, alpineData) {
+  alpineData.clicked = nodeName;
+  alpineData.nodeDetails = nodeName;
+  htmx.ajax("GET", `/nodes/${nodeName}`, "#node-details");
+}
+
+function showUpstreamGraph(nodeName, alpineData) {
+  alpineData.clicked = nodeName;
+  htmx.ajax("GET", `/upstream/${nodeName}`, "#mermaid-graph").then(() => {
     reRenderMermaidGraph("mermaid-graph", alpineData);
+    addClickListenersToNodes(alpineData, "mermaid-graph");
   });
-  addClickListenersToNodes(alpineData, "mermaid-graph");
 }
 
 function showAsLRGraph(event) {
