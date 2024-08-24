@@ -1,5 +1,10 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Improved Page</title>
+    <link rel="stylesheet" href="styles.css" />
     <script
       defer
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
@@ -12,7 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body>
+  <body class="bg-gray-100 font-sans flex">
     <script>
       function reRenderMermaidGraph(eltId, alpineData) {
         const element = document.getElementById(eltId);
@@ -45,36 +50,56 @@
       }
     </script>
 
-    <div x-data="{ query: '', results: [], clicked: '', nodeDetails: ''}">
-      <input
-        x-model="query"
-        placeholder="Search"
-        hx-trigger="click,keyup"
-        x-bind:hx-get="`/search?query=${query}`"
-        x-effect="query; htmx.process($el);"
-        @htmx:after-request.camel="results = JSON.parse(event.detail.xhr.responseText); htmx.process($el);"
-      />
+    <div
+      x-data="{ query: '', results: [], clicked: '', nodeDetails: ''}"
+      class="flex flex-grow p-4 max-w-4xl mx-auto"
+    >
+      <div class="flex-grow">
+        <input
+          x-model="query"
+          placeholder="Search"
+          hx-trigger="click,keyup"
+          x-bind:hx-get="`/search?query=${query}`"
+          x-effect="query; htmx.process($el);"
+          @htmx:after-request.camel="results = JSON.parse(event.detail.xhr.responseText); htmx.process($el);"
+          class="w-full p-2 mb-4 border rounded-lg"
+        />
 
-      <template x-for="result in results" :key="result">
-        <div
-          x-text="result"
-          @click="clicked = result"
-          hx-trigger="click"
-          hx-target="#mermaid-graph"
-          x-bind:hx-get="`/upstream/${result}`"
-          x-init="htmx.process($el)"
-          @htmx:after-request.camel="afterRequest($event, 'mermaid-graph', $data)"
-        ></div>
-      </template>
+        <template x-for="result in results" :key="result">
+          <div
+            x-text="result"
+            @click="clicked = result"
+            hx-trigger="click"
+            hx-target="#mermaid-graph"
+            x-bind:hx-get="`/upstream/${result}`"
+            x-init="htmx.process($el)"
+            @htmx:after-request.camel="afterRequest($event, 'mermaid-graph', $data)"
+            class="p-2 mb-2 cursor-pointer border rounded-lg bg-white hover:bg-gray-200"
+          ></div>
+        </template>
 
-      <div x-show="clicked">
-        Upstream Dependencies for <span x-text="clicked"></span>
+        <div x-show="clicked" class="mb-4 p-2 bg-gray-100 border rounded-lg">
+          Upstream Dependencies for
+          <span x-text="clicked" class="font-bold"></span>
+        </div>
+
+        <pre id="mermaid-graph" class="p-4 bg-white border rounded-lg"></pre>
       </div>
 
-      <pre id="mermaid-graph"></pre>
-
-      <div x-show="nodeDetails">
-        Node Details for <span x-text="nodeDetails"></span>
+      <div
+        x-show="nodeDetails"
+        class="fixed inset-y-0 right-0 w-1/4 bg-gray-200 shadow-lg p-4 overflow-y-auto transform transition-transform"
+        :class="{ '-translate-x-full': !nodeDetails }"
+      >
+        <button
+          @click="nodeDetails = ''"
+          class="absolute top-4 right-4 p-2 bg-gray-300 rounded-full hover:bg-gray-400"
+        >
+          x
+        </button>
+        <div class="text-lg font-bold mb-2">
+          Node Details for <span x-text="nodeDetails"></span>
+        </div>
         <div id="node-details"></div>
       </div>
     </div>
