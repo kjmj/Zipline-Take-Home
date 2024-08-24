@@ -13,11 +13,24 @@
   </head>
   <body>
     <script>
-      function reRenderMermaidGraph(eltId) {
+      function reRenderMermaidGraph(eltId, alpineData) {
         const element = document.getElementById(eltId);
         element.classList.add("mermaid");
         element.removeAttribute("data-processed");
         mermaid.contentLoaded();
+
+        setTimeout(() => {
+          element.querySelectorAll(".node").forEach((node) => {
+            const nodeName = node.textContent.trim();
+            node.setAttribute("hx-get", `/nodes/${nodeName}`);
+            node.setAttribute("hx-target", "#node-details");
+            htmx.process(node);
+
+            node.addEventListener("click", (event) => {
+              alpineData.nodeDetails = nodeName;
+            });
+          });
+        });
       }
 
       function showAsLRGraph(event) {
@@ -25,13 +38,13 @@
         event.detail.target.innerHTML = "graph LR; " + response;
       }
 
-      function afterRequest(event, mermaidId) {
+      function afterRequest(event, mermaidId, alpineData) {
         showAsLRGraph(event);
-        reRenderMermaidGraph(mermaidId);
+        reRenderMermaidGraph(mermaidId, alpineData);
       }
     </script>
 
-    <div x-data="{ query: '', results: [], clicked: ''}">
+    <div x-data="{ query: '', results: [], clicked: '', nodeDetails: ''}">
       <input
         x-model="query"
         placeholder="Search"
@@ -49,11 +62,20 @@
           hx-target="#mermaid-graph"
           x-bind:hx-get="`/upstream/${result}`"
           x-init="htmx.process($el)"
-          @htmx:after-request.camel="afterRequest($event, 'mermaid-graph')"
+          @htmx:after-request.camel="afterRequest($event, 'mermaid-graph', $data)"
         ></div>
       </template>
 
+      <div x-show="clicked">
+        Upstream Dependencies for <span x-text="clicked"></span>
+      </div>
+
       <pre id="mermaid-graph"></pre>
+
+      <div x-show="nodeDetails">
+        Node Details for <span x-text="nodeDetails"></span>
+        <div id="node-details"></div>
+      </div>
     </div>
   </body>
 </html>
