@@ -60,7 +60,7 @@
         <input
           x-model="query"
           placeholder="Search for a node in the full graph"
-          hx-trigger="click,keyup"
+          hx-trigger="click,keyup delay:200ms"
           x-bind:hx-get="`/search?query=${query}`"
           x-effect="query; htmx.process($el);"
           @htmx:after-request.camel="results = JSON.parse(event.detail.xhr.responseText); htmx.process($el);"

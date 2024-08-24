@@ -3,13 +3,13 @@ from flask_cors import CORS
 import json
 from typing import Dict, List, Union
 
+# Decide what graph you want to load
+GRAPH_NAME = 'graph2'
+
 app = Flask(__name__)
 CORS(app)
 
-# Decide what graph you want to load
-graph_name = 'graph2'
-
-with open(f'graphs/{graph_name}.json', 'r') as file:
+with open(f'graphs/{GRAPH_NAME}.json', 'r') as file:
     nodes: Dict[str, Dict] = json.load(file)
 
 @app.route("/")
@@ -45,7 +45,7 @@ def get_graph_as_string_endpoint() -> str:
 def get_upstream_dependencies(nodes: Dict[str, Dict], target_node_name: str) -> List[tuple]:
     """Find all upstream dependencies of a target node."""
     reversed_dag = {}
-    
+
     for node_data in nodes.values():
         node_name = node_data.get('node_name')
         outgoing_edges = node_data.get('outgoing_edges', [])
@@ -53,19 +53,19 @@ def get_upstream_dependencies(nodes: Dict[str, Dict], target_node_name: str) -> 
             if target_name not in reversed_dag:
                 reversed_dag[target_name] = []
             reversed_dag[target_name].append(node_name)
-    
+
     if target_node_name not in (node.get('node_name') for node in nodes.values()):
         raise ValueError(f"Node with name '{target_node_name}' not found in nodes.")
-    
+
     upstream_dependencies = set()
-    
+
     def dfs(current_node_name: str, path: List[tuple]):
         if current_node_name in reversed_dag:
             for predecessor_name in reversed_dag[current_node_name]:
                 if (predecessor_name, current_node_name) not in path:
                     upstream_dependencies.add((predecessor_name, current_node_name))
                     dfs(predecessor_name, path + [(predecessor_name, current_node_name)])
-    
+
     dfs(target_node_name, [])
     return list(upstream_dependencies)
 
