@@ -22,6 +22,12 @@
     <div
       x-data="{ selectedDepth: 1, query: '', results: [], clicked: '', nodeDetails: '', focused: false, pluralize(word, count) {
         return count === 1 ? word : word + 's';
+      }, selectFirstResult() {
+        if (this.results.length > 0) {
+          this.query = this.results[0];
+          showUpstreamGraph(this.query, $data);
+          this.focused = false;
+        }
       } }"
       class="flex flex-grow p-4 max-w-4xl mx-auto"
     >
@@ -46,6 +52,7 @@
             hx-trigger="focus,keyup delay:200ms"
             x-bind:hx-get="`/search?query=${query}`"
             x-effect="query; htmx.process($el);"
+            @keydown.enter="selectFirstResult"
             @htmx:after-request.camel="results = JSON.parse(event.detail.xhr.responseText); htmx.process($el);"
             @focus="focused = true"
             @blur="setTimeout(() => focused = false, 200)"
