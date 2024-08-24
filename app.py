@@ -3,7 +3,7 @@ from flask_cors import CORS
 import json
 
 with open('graphs.json', 'r') as file:
-    nodes = json.load(file)['graph12']
+    nodes = json.load(file)['graph11']
 
 app = Flask(__name__)
 CORS(app)
@@ -13,21 +13,21 @@ def render_html():
     return render_template('index.html') 
 
 @app.route('/search', methods=['GET'])
-def search_nodes():
-    query = request.args.get('query', '').upper()
+def search_nodes_endpoint():
+    query = request.args.get('query', '').lower()  # Convert query to lowercase
     return jsonify(search_nodes(nodes, query))
 
 @app.route('/nodes/<node_name>', methods=['GET'])
-def get_node_by_name(node_name):
+def get_node_by_name_endpoint(node_name):
     return jsonify(get_node_by_name(nodes, node_name))
 
 @app.route('/upstream/<node_name>', methods=['GET'])
-def get_upstream_dependencies(node_name):
+def get_upstream_dependencies_endpoint(node_name):
     output_string = upstream_output_string(nodes, node_name)
     return output_string
 
 @app.route('/graph', methods=['GET'])
-def get_graph_as_string():
+def get_graph_as_string_endpoint():
     return get_graph_as_string(nodes)
 
 def get_upstream_dependencies(nodes, target_node_name):
@@ -64,7 +64,8 @@ def get_node_by_name(nodes, node_name):
         return f"Node with name '{node_name}' not found."
 
 def search_nodes(nodes, query):
-    return [node_name for node_name in nodes if query in node_name]
+    query = query.lower()
+    return [node_name for node_name in nodes if query in node_name.lower()]
 
 def upstream_output_string(nodes, node_name):
     upstream_dependencies = get_upstream_dependencies(nodes, node_name)
