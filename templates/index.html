@@ -25,7 +25,7 @@
       }, selectFirstResult() {
         if (this.results.length > 0) {
           this.query = this.results[0];
-          showUpstreamGraph(this.query, $data);
+          this.showUpstreamGraph(this.query, $data);
           this.focused = false;
         }
       } }"
@@ -77,13 +77,20 @@
           </template>
         </div>
 
-        <div
-          class="mb-4 p-2 bg-white border rounded-lg mt-4 shadow-sm text-lg font-bold"
-        >
-          Full Graph
+        <div class="mb-4 p-4 bg-white border rounded-lg mt-4 shadow-sm">
+          <div class="text-lg font-bold">Full Graph</div>
+          <p class="text-gray-600 text-sm mt-2">
+            The full graph represents the entire network of nodes and their
+            connections. You can configure how this graph is generated in the
+            app.py file. Use this graph to understand the overall structure and
+            connections within the system.
+          </p>
+          <p class="text-gray-600 text-sm mt-2 font-bold">
+            Click on a node or search for it to view its upstream dependencies.
+          </p>
           <pre
             id="full-mermaid-graph"
-            class="mermaid"
+            class="mermaid mt-4"
             hx-get="/graph"
             hx-trigger="load"
             @htmx:after-request.camel="addClickListenersToNodes($data, 'full-mermaid-graph')"
@@ -92,7 +99,7 @@
 
         <div
           x-show="clicked"
-          class="mb-4 p-2 bg-white border rounded-lg mt-4 shadow-sm"
+          class="mb-4 p-4 bg-white border rounded-lg mt-4 shadow-sm"
         >
           <div class="text-lg font-bold">
             Upstream Dependencies of Node
@@ -102,8 +109,17 @@
             <span x-text="pluralize('level', selectedDepth)"></span>
             )
           </div>
-          <div>Click on a node to view more info</div>
-          <pre id="mermaid-graph"></pre>
+          <p class="text-gray-600 text-sm mt-2">
+            This section displays the upstream dependencies of the selected
+            node. The graph shows which nodes directly or indirectly feed into
+            the selected node up to the specified number of levels. By clicking
+            on individual nodes in this graph, you can explore their
+            relationships in more detail.
+          </p>
+          <div class="text-gray-600 text-sm mt-2 font-bold">
+            Click on a node to view more info
+          </div>
+          <pre id="mermaid-graph" class="mt-4"></pre>
         </div>
       </div>
 
@@ -123,9 +139,14 @@
           <span x-text="nodeDetails" class="text-blue-600"></span>
           Information
         </div>
+        <p class="text-gray-600 text-sm mt-2">
+          This section provides detailed information about the selected node.
+          You can see various attributes, relationships, and any other relevant
+          data associated with this node.
+        </p>
         <div
           id="node-details"
-          class="whitespace-pre-wrap font-mono bg-gray-100 p-4 border rounded-md border-gray-300 overflow-x-auto"
+          class="whitespace-pre-wrap font-mono bg-gray-100 p-4 mt-4 border rounded-md border-gray-300 overflow-x-auto"
         ></div>
       </div>
     </div>
