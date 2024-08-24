@@ -20,18 +20,30 @@
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 
     <div
-      x-data="{ selectedDepth: 1, query: '', results: [], clicked: '', nodeDetails: '', focused: false, pluralize(word, count) {
-        return count === 1 ? word : word + 's';
-      }, selectFirstResult() {
-        if (this.results.length > 0) {
-          this.query = this.results[0];
-          this.showUpstreamGraph(this.query, $data);
-          this.focused = false;
+      x-data="{
+        selectedDepth: 1,
+        searchQuery: '',
+        searchResults: [],
+        selectedNode: '',
+        nodeDetails: '',
+        isFocused: false,
+
+        pluralize(word, count) {
+          return count === 1 ? word : word + 's';
+        },
+
+        handleFirstResultSelection() {
+          if (this.searchResults.length > 0) {
+            this.searchQuery = this.searchResults[0];
+            this.renderUpstreamGraph(this.searchQuery, $data);
+            this.isFocused = false;
+          }
         }
-      } }"
+      }"
       class="flex flex-grow p-4 max-w-4xl mx-auto"
     >
       <div class="relative flex-grow">
+        <!-- Project Overview -->
         <div class="mb-4 p-4 bg-white border rounded-lg mt-4 shadow-sm">
           <div class="text-lg font-bold">Project Overview</div>
           <p class="text-gray-600 text-sm mt-2">
@@ -42,10 +54,11 @@
           </p>
         </div>
 
+        <!-- Search and Depth Selector -->
         <div class="flex">
           <select
             x-model="selectedDepth"
-            @change="showUpstreamGraph(clicked, $data)"
+            @change="renderUpstreamGraph(selectedNode, $data)"
             class="p-2 border rounded-l-lg bg-white shadow-sm"
           >
             <option value="0">0 Level</option>
@@ -57,29 +70,30 @@
           </select>
 
           <input
-            x-model="query"
+            x-model="searchQuery"
             placeholder="Search for a node in the full graph"
             hx-trigger="focus,keyup delay:200ms"
-            x-bind:hx-get="`/search?query=${query}`"
-            x-effect="query; htmx.process($el);"
-            @keydown.enter="selectFirstResult"
-            @htmx:after-request.camel="results = JSON.parse(event.detail.xhr.responseText); htmx.process($el);"
-            @focus="focused = true"
-            @blur="setTimeout(() => focused = false, 200)"
+            x-bind:hx-get="`/search?query=${searchQuery}`"
+            x-effect="searchQuery; htmx.process($el);"
+            @keydown.enter="handleFirstResultSelection"
+            @htmx:after-request.camel="searchResults = JSON.parse(event.detail.xhr.responseText); htmx.process($el);"
+            @focus="isFocused = true"
+            @blur="setTimeout(() => isFocused = false, 200)"
             class="w-full p-2 border rounded-r-lg bg-white shadow-sm"
           />
         </div>
 
+        <!-- Search Results Dropdown -->
         <div
-          id="results"
-          x-show="focused && results.length > 0"
+          id="search-results"
+          x-show="isFocused && searchResults.length > 0"
           class="absolute w-full border rounded-lg bg-white shadow-lg z-10"
           style="max-height: 200px; overflow-y: auto"
         >
-          <template x-for="result in results" :key="result">
+          <template x-for="result in searchResults" :key="result">
             <div
               x-text="result"
-              @click="showUpstreamGraph(result, $data); focused = false; query = result;"
+              @click="renderUpstreamGraph(result, $data); isFocused = false; searchQuery = result;"
               hx-trigger="click"
               x-init="htmx.process($el)"
               class="px-4 py-2 cursor-pointer hover:bg-gray-100"
@@ -87,6 +101,7 @@
           </template>
         </div>
 
+        <!-- Full Graph -->
         <div class="mb-4 p-4 bg-white border rounded-lg mt-4 shadow-sm">
           <div class="text-lg font-bold">Full Graph</div>
           <p class="text-gray-600 text-sm mt-2">
@@ -107,13 +122,14 @@
           ></pre>
         </div>
 
+        <!-- Upstream Dependencies -->
         <div
-          x-show="clicked"
+          x-show="selectedNode"
           class="mb-4 p-4 bg-white border rounded-lg mt-4 shadow-sm"
         >
           <div class="text-lg font-bold">
             Upstream Dependencies of Node
-            <span x-text="clicked" class="font-bold text-blue-600"></span>
+            <span x-text="selectedNode" class="font-bold text-blue-600"></span>
             (
             <span x-text="selectedDepth" class="font-bold text-blue-600"></span>
             <span x-text="pluralize('level', selectedDepth)"></span>
@@ -129,10 +145,11 @@
           <div class="text-gray-600 text-sm mt-2 font-bold">
             Click on a node to view more info
           </div>
-          <pre id="mermaid-graph" class="mt-4"></pre>
+          <pre id="upstream-mermaid-graph" class="mt-4"></pre>
         </div>
       </div>
 
+      <!-- Node Details Sidebar -->
       <div
         x-show="nodeDetails"
         class="fixed inset-y-0 right-0 w-1/3 bg-white shadow-lg p-6 overflow-y-auto transform transition-transform"
@@ -155,7 +172,7 @@
           data associated with this node.
         </p>
         <div
-          id="node-details"
+          id="node-details-content"
           class="whitespace-pre-wrap font-mono bg-gray-100 p-4 mt-4 border rounded-md border-gray-300 overflow-x-auto"
         ></div>
       </div>
