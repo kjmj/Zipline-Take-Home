@@ -1,20 +1,12 @@
 from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
+import json
+
+with open('graphs.json', 'r') as file:
+    nodes = json.load(file)['graph12']
 
 app = Flask(__name__)
 CORS(app)
-
-nodes = {
-    'A': {'node_name': 'A', 'node_type': 'TYPE_1', 'outgoing_edges': ['B']},
-    'B': {'node_name': 'B', 'node_type': 'TYPE_2', 'outgoing_edges': ['E', 'F']},
-    'C': {'node_name': 'C', 'node_type': 'TYPE_3', 'outgoing_edges': ['B']},
-    'D': {'node_name': 'D', 'node_type': 'TYPE_4', 'outgoing_edges': ['E', 'F']},
-    'E': {'node_name': 'E', 'node_type': 'TYPE_1', 'outgoing_edges': ['H']},
-    'F': {'node_name': 'F', 'node_type': 'TYPE_2', 'outgoing_edges': []},
-    'G': {'node_name': 'G', 'node_type': 'TYPE_3', 'outgoing_edges': ['H']},
-    'H': {'node_name': 'H', 'node_type': 'TYPE_4', 'outgoing_edges': ['I']},
-    'I': {'node_name': 'I', 'node_type': 'TYPE_1', 'outgoing_edges': []}
-}
 
 @app.route("/") 
 def render_html(): 
