@@ -12,7 +12,26 @@
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
   </head>
   <body>
-    <div x-data="{ query: '', results: []}">
+    <script>
+      function reRenderMermaidGraph(eltId) {
+        const element = document.getElementById(eltId);
+        element.classList.add("mermaid");
+        element.removeAttribute("data-processed");
+        mermaid.contentLoaded();
+      }
+
+      function showAsLRGraph(event) {
+        let response = event.detail.xhr.responseText;
+        event.detail.target.innerHTML = "graph LR; " + response;
+      }
+
+      function afterRequest(event, mermaidId) {
+        showAsLRGraph(event);
+        reRenderMermaidGraph(mermaidId);
+      }
+    </script>
+
+    <div x-data="{ query: '', results: [], clicked: ''}">
       <input
         x-model="query"
         placeholder="Search"
@@ -23,8 +42,18 @@
       />
 
       <template x-for="result in results" :key="result">
-        <div x-text="result"></div>
+        <div
+          x-text="result"
+          @click="clicked = result"
+          hx-trigger="click"
+          hx-target="#mermaid-graph"
+          x-bind:hx-get="`/upstream/${result}`"
+          x-init="htmx.process($el)"
+          @htmx:after-request.camel="afterRequest($event, 'mermaid-graph')"
+        ></div>
       </template>
+
+      <pre id="mermaid-graph"></pre>
     </div>
   </body>
 </html>
