@@ -85,7 +85,7 @@ def get_graph_as_string(nodes):
     for node_key, node_value in nodes.items():
         for edge in node_value['outgoing_edges']:
             edges.append(f"{node_key}-->{edge}")
-    return "LR; " + "; ".join(edges)
+    return "; ".join(edges)
 
 if __name__ == '__main__':
     app.run(debug=True)
