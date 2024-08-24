@@ -12,6 +12,19 @@
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
   </head>
   <body>
-    <h1>Hello world</h1>
+    <div x-data="{ query: '', results: []}">
+      <input
+        x-model="query"
+        placeholder="Search"
+        hx-trigger="click,keyup"
+        x-bind:hx-get="`/search?query=${query}`"
+        x-effect="query; htmx.process($el);"
+        @htmx:after-request.camel="results = JSON.parse(event.detail.xhr.responseText); htmx.process($el);"
+      />
+
+      <template x-for="result in results" :key="result">
+        <div x-text="result"></div>
+      </template>
+    </div>
   </body>
 </html>
