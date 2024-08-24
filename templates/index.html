@@ -50,10 +50,10 @@
     </script>
 
     <div
-      x-data="{ query: '', results: [], clicked: '', nodeDetails: ''}"
+      x-data="{ query: '', results: [], clicked: '', nodeDetails: '', focused: false }"
       class="flex flex-grow p-4 max-w-4xl mx-auto"
     >
-      <div class="flex-grow">
+      <div class="relative flex-grow">
         <input
           x-model="query"
           placeholder="Search"
@@ -61,17 +61,21 @@
           x-bind:hx-get="`/search?query=${query}`"
           x-effect="query; htmx.process($el);"
           @htmx:after-request.camel="results = JSON.parse(event.detail.xhr.responseText); htmx.process($el);"
-          class="w-full p-2 mb-4 border rounded-lg"
+          @focus="focused = true"
+          @blur="setTimeout(() => focused = false, 200)"
+          class="w-full p-2 border rounded-lg"
         />
 
         <div
-          x-show="results.length > 0"
-          class="mb-4 border rounded-lg bg-white"
+          id="results"
+          x-show="focused && results.length > 0"
+          class="absolute w-full border rounded-lg bg-white shadow-lg z-10"
+          style="max-height: 200px; overflow-y: auto"
         >
           <template x-for="result in results" :key="result">
             <div
               x-text="result"
-              @click="clicked = result"
+              @click="clicked = result; focused = false"
               hx-trigger="click"
               hx-target="#mermaid-graph"
               x-bind:hx-get="`/upstream/${result}`"
@@ -82,7 +86,10 @@
           </template>
         </div>
 
-        <div x-show="clicked" class="mb-4 p-2 bg-gray-100 border rounded-lg">
+        <div
+          x-show="clicked"
+          class="mb-4 p-2 bg-gray-100 border rounded-lg mt-4"
+        >
           Upstream Dependencies for
           <span x-text="clicked" class="font-bold"></span>
           <pre id="mermaid-graph"></pre>
