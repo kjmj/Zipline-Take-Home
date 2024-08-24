@@ -1,0 +1,91 @@
+from flask import Flask, jsonify, request, render_template
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app)
+
+nodes = {
+    'A': {'node_name': 'A', 'node_type': 'TYPE_1', 'outgoing_edges': ['B']},
+    'B': {'node_name': 'B', 'node_type': 'TYPE_2', 'outgoing_edges': ['E', 'F']},
+    'C': {'node_name': 'C', 'node_type': 'TYPE_3', 'outgoing_edges': ['B']},
+    'D': {'node_name': 'D', 'node_type': 'TYPE_4', 'outgoing_edges': ['E', 'F']},
+    'E': {'node_name': 'E', 'node_type': 'TYPE_1', 'outgoing_edges': ['H']},
+    'F': {'node_name': 'F', 'node_type': 'TYPE_2', 'outgoing_edges': []},
+    'G': {'node_name': 'G', 'node_type': 'TYPE_3', 'outgoing_edges': ['H']},
+    'H': {'node_name': 'H', 'node_type': 'TYPE_4', 'outgoing_edges': ['I']},
+    'I': {'node_name': 'I', 'node_type': 'TYPE_1', 'outgoing_edges': []}
+}
+
+@app.route("/") 
+def render_html(): 
+    return render_template('index.html') 
+
+@app.route('/search', methods=['GET'])
+def search_nodes():
+    query = request.args.get('query', '').upper()
+    return jsonify(search_nodes(nodes, query))
+
+@app.route('/nodes/<node_name>', methods=['GET'])
+def get_node_by_name(node_name):
+    return jsonify(get_node_by_name(nodes, node_name))
+
+@app.route('/upstream/<node_name>', methods=['GET'])
+def get_upstream_dependencies(node_name):
+    output_string = upstream_output_string(nodes, node_name)
+    return output_string
+
+@app.route('/graph', methods=['GET'])
+def get_graph_as_string():
+    return get_graph_as_string(nodes)
+
+def get_upstream_dependencies(nodes, target_node_name):
+    reversed_dag = {}
+    
+    for node_name, node_data in nodes.items():
+        outgoing_edges = node_data['outgoing_edges']
+        for target_name in outgoing_edges:
+            if target_name not in reversed_dag:
+                reversed_dag[target_name] = []
+            reversed_dag[target_name].append(node_name)
+    
+    if target_node_name not in nodes:
+        raise ValueError(f"Node with name {target_node_name} not found in nodes.")
+    
+    target_node = nodes[target_node_name]
+    
+    upstream_dependencies = set()
+    
+    def dfs(current_node_name, path):
+        if current_node_name in reversed_dag:
+            for predecessor_name in reversed_dag[current_node_name]:
+                if (predecessor_name, current_node_name) not in path:
+                    upstream_dependencies.add((predecessor_name, current_node_name))
+                    dfs(predecessor_name, path + [(predecessor_name, current_node_name)])
+    
+    dfs(target_node_name, [])
+    return list(upstream_dependencies)
+
+def get_node_by_name(nodes, node_name):
+    if node_name in nodes:
+        return nodes[node_name]
+    else:
+        return f"Node with name '{node_name}' not found."
+
+def search_nodes(nodes, query):
+    return [node_name for node_name in nodes if query in node_name]
+
+def upstream_output_string(nodes, node_name):
+    upstream_dependencies = get_upstream_dependencies(nodes, node_name)
+    if not upstream_dependencies:
+        return node_name
+    return "; ".join(f"{item[0]}-->{item[1]}" for item in upstream_dependencies) + ";"
+
+def get_graph_as_string(nodes):
+    edges = []
+    for node_key, node_value in nodes.items():
+        for edge in node_value['outgoing_edges']:
+            edges.append(f"{node_key}-->{edge}")
+    return "LR; " + "; ".join(edges)
+
+if __name__ == '__main__':
+    app.run(debug=True)
