@@ -18,37 +18,64 @@
   </head>
   <body class="bg-gray-100 font-sans flex">
     <script>
+      document.body.addEventListener("htmx:afterRequest", function (event) {
+        showAsLRGraph(event);
+      });
+
       function reRenderMermaidGraph(eltId, alpineData) {
         const element = document.getElementById(eltId);
         element.classList.add("mermaid");
         element.removeAttribute("data-processed");
         mermaid.contentLoaded();
+      }
 
+      function afterRequestFullMermaidGraph(alpineData) {
         setTimeout(() => {
-          element.querySelectorAll(".node").forEach((node) => {
-            const nodeName = node.textContent.trim();
-            node.setAttribute("hx-get", `/nodes/${nodeName}`);
-            node.setAttribute("hx-target", "#node-details");
-            node.style.cursor = "pointer";
-            htmx.process(node);
+          document
+            .getElementById("full-mermaid-graph")
+            .querySelectorAll(".node")
+            .forEach((node) => {
+              node.style.cursor = "pointer";
+              const nodeName = node.textContent.trim();
+              node.addEventListener("click", (event) => {
+                alpineData.clicked = nodeName;
+                htmx
+                  .ajax("GET", `/upstream/${nodeName}`, "#mermaid-graph")
+                  .then(() => {
+                    reRenderMermaidGraph("mermaid-graph", alpineData);
+                    addClickListenersToMermaidGraphNodes(alpineData);
+                  });
+              });
+            });
+        });
+      }
 
-            if (alpineData) {
+      function afterRequestResult(alpineData) {
+        setTimeout(() => {
+          reRenderMermaidGraph("mermaid-graph", alpineData);
+        });
+        addClickListenersToMermaidGraphNodes(alpineData);
+      }
+
+      function addClickListenersToMermaidGraphNodes(alpineData) {
+        setTimeout(() => {
+          document
+            .getElementById("mermaid-graph")
+            .querySelectorAll(".node")
+            .forEach((node) => {
+              node.style.cursor = "pointer";
+              const nodeName = node.textContent.trim();
               node.addEventListener("click", (event) => {
                 alpineData.nodeDetails = nodeName;
+                htmx.ajax("GET", `/nodes/${nodeName}`, "#node-details");
               });
-            }
-          });
+            });
         });
       }
 
       function showAsLRGraph(event) {
         let response = event.detail.xhr.responseText;
         event.detail.target.innerHTML = "graph LR; " + response;
-      }
-
-      function afterRequest(event, mermaidId, alpineData) {
-        showAsLRGraph(event);
-        reRenderMermaidGraph(mermaidId, alpineData);
       }
     </script>
 
@@ -83,7 +110,7 @@
               hx-target="#mermaid-graph"
               x-bind:hx-get="`/upstream/${result}`"
               x-init="htmx.process($el)"
-              @htmx:after-request.camel="afterRequest($event, 'mermaid-graph', $data)"
+              @htmx:after-request.camel="afterRequestResult($data)"
               class="px-4 py-2 cursor-pointer hover:bg-gray-100"
             ></div>
           </template>
@@ -94,10 +121,11 @@
         >
           Full Graph
           <pre
+            id="full-mermaid-graph"
             class="mermaid"
             hx-get="/graph"
             hx-trigger="load"
-            @htmx:after-request.camel="afterRequest($event, 'full-mermaid-graph')"
+            @htmx:after-request.camel="afterRequestFullMermaidGraph($data)"
           ></pre>
         </div>
 
