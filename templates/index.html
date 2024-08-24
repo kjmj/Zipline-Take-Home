@@ -63,7 +63,7 @@
           @htmx:after-request.camel="results = JSON.parse(event.detail.xhr.responseText); htmx.process($el);"
           @focus="focused = true"
           @blur="setTimeout(() => focused = false, 200)"
-          class="w-full p-2 border rounded-lg"
+          class="w-full p-2 border rounded-lg bg-white shadow-sm"
         />
 
         <div
@@ -88,7 +88,7 @@
 
         <div
           x-show="clicked"
-          class="mb-4 p-2 bg-gray-100 border rounded-lg mt-4"
+          class="mb-4 p-2 bg-white border rounded-lg mt-4 shadow-sm"
         >
           Upstream Dependencies for
           <span x-text="clicked" class="font-bold"></span>
@@ -98,19 +98,22 @@
 
       <div
         x-show="nodeDetails"
-        class="fixed inset-y-0 right-0 w-1/4 bg-gray-200 shadow-lg p-4 overflow-y-auto transform transition-transform"
+        class="fixed inset-y-0 right-0 w-1/4 bg-white shadow-lg p-6 overflow-y-auto transform transition-transform"
         :class="{ '-translate-x-full': !nodeDetails }"
       >
         <button
           @click="nodeDetails = ''"
-          class="absolute top-4 right-4 p-2 bg-gray-300 rounded-full hover:bg-gray-400"
+          class="absolute top-4 right-4 w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center hover:bg-gray-400 focus:outline-none mb-2"
         >
-          x
+          <span class="text-xl text-gray-700">×</span>
         </button>
         <div class="text-lg font-bold mb-2">
           Node Details for <span x-text="nodeDetails"></span>
         </div>
-        <div id="node-details"></div>
+        <div
+          id="node-details"
+          class="whitespace-pre-wrap font-mono bg-gray-100 p-4 border rounded-md border-gray-300 overflow-x-auto"
+        ></div>
       </div>
     </div>
   </body>
