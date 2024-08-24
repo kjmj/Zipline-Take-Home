@@ -2,8 +2,8 @@ from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 import json
 
-with open('graphs.json', 'r') as file:
-    nodes = json.load(file)['graph11']
+with open('graphs/graph3.json', 'r') as file:
+    nodes = json.load(file)
 
 app = Flask(__name__)
 CORS(app)

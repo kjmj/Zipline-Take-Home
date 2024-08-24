@@ -1,0 +1,44 @@
+{
+  "A": {
+    "node_name": "A",
+    "node_type": "TYPE_1",
+    "outgoing_edges": ["B", "C", "D"]
+  },
+  "B": {
+    "node_name": "B",
+    "node_type": "TYPE_2",
+    "outgoing_edges": ["E", "F"]
+  },
+  "C": {
+    "node_name": "C",
+    "node_type": "TYPE_3",
+    "outgoing_edges": ["F", "G"]
+  },
+  "D": {
+    "node_name": "D",
+    "node_type": "TYPE_4",
+    "outgoing_edges": ["G", "H"]
+  },
+  "E": { "node_name": "E", "node_type": "TYPE_1", "outgoing_edges": ["I"] },
+  "F": {
+    "node_name": "F",
+    "node_type": "TYPE_2",
+    "outgoing_edges": ["I", "J"]
+  },
+  "G": {
+    "node_name": "G",
+    "node_type": "TYPE_3",
+    "outgoing_edges": ["J", "K"]
+  },
+  "H": { "node_name": "H", "node_type": "TYPE_4", "outgoing_edges": ["K"] },
+  "I": { "node_name": "I", "node_type": "TYPE_1", "outgoing_edges": ["L"] },
+  "J": {
+    "node_name": "J",
+    "node_type": "TYPE_2",
+    "outgoing_edges": ["L", "M"]
+  },
+  "K": { "node_name": "K", "node_type": "TYPE_3", "outgoing_edges": ["M"] },
+  "L": { "node_name": "L", "node_type": "TYPE_4", "outgoing_edges": ["N"] },
+  "M": { "node_name": "M", "node_type": "TYPE_1", "outgoing_edges": ["N"] },
+  "N": { "node_name": "N", "node_type": "TYPE_2", "outgoing_edges": [] }
+}

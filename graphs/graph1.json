@@ -1,0 +1,12 @@
+{
+  "A": {
+    "node_name": "A",
+    "node_type": "TYPE_1",
+    "outgoing_edges": ["B", "C"]
+  },
+  "B": { "node_name": "B", "node_type": "TYPE_2", "outgoing_edges": ["D"] },
+  "C": { "node_name": "C", "node_type": "TYPE_3", "outgoing_edges": ["E"] },
+  "D": { "node_name": "D", "node_type": "TYPE_4", "outgoing_edges": ["F"] },
+  "E": { "node_name": "E", "node_type": "TYPE_1", "outgoing_edges": ["F"] },
+  "F": { "node_name": "F", "node_type": "TYPE_2", "outgoing_edges": [] }
+}

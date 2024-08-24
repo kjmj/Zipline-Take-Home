@@ -1,0 +1,32 @@
+{
+  "node1": {
+    "node_name": "Node_1A",
+    "node_type": "TYPE_1",
+    "outgoing_edges": ["node2", "node3"]
+  },
+  "node2": {
+    "node_name": "Node_2B",
+    "node_type": "TYPE_2",
+    "outgoing_edges": ["node4"]
+  },
+  "node3": {
+    "node_name": "Node_3C",
+    "node_type": "TYPE_3",
+    "outgoing_edges": ["node4"]
+  },
+  "node4": {
+    "node_name": "Node_4D",
+    "node_type": "TYPE_4",
+    "outgoing_edges": ["node5", "node6"]
+  },
+  "node5": {
+    "node_name": "Node_5E",
+    "node_type": "TYPE_1",
+    "outgoing_edges": []
+  },
+  "node6": {
+    "node_name": "Node_6F",
+    "node_type": "TYPE_2",
+    "outgoing_edges": []
+  }
+}
