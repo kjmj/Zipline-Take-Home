@@ -7,7 +7,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Decide what graph you want to load
-graph_name = 'graph1'
+graph_name = 'graph2'
 
 with open(f'graphs/{graph_name}.json', 'r') as file:
     nodes: Dict[str, Dict] = json.load(file)
@@ -46,14 +46,15 @@ def get_upstream_dependencies(nodes: Dict[str, Dict], target_node_name: str) -> 
     """Find all upstream dependencies of a target node."""
     reversed_dag = {}
     
-    for node_name, node_data in nodes.items():
+    for node_data in nodes.values():
+        node_name = node_data.get('node_name')
         outgoing_edges = node_data.get('outgoing_edges', [])
         for target_name in outgoing_edges:
             if target_name not in reversed_dag:
                 reversed_dag[target_name] = []
             reversed_dag[target_name].append(node_name)
     
-    if target_node_name not in nodes:
+    if target_node_name not in (node.get('node_name') for node in nodes.values()):
         raise ValueError(f"Node with name '{target_node_name}' not found in nodes.")
     
     upstream_dependencies = set()
@@ -70,11 +71,14 @@ def get_upstream_dependencies(nodes: Dict[str, Dict], target_node_name: str) -> 
 
 def get_node_by_name(nodes: Dict[str, Dict], node_name: str) -> Union[Dict, str]:
     """Retrieve a node by its name."""
-    return nodes.get(node_name, f"Node with name '{node_name}' not found.")
+    for node_data in nodes.values():
+        if node_data.get('node_name') == node_name:
+            return node_data
+    return f"Node with name '{node_name}' not found."
 
 def search_nodes(nodes: Dict[str, Dict], query: str) -> List[str]:
     """Search nodes based on a query."""
-    return [node_name for node_name in nodes if query in node_name.lower()]
+    return [node_data.get('node_name') for node_data in nodes.values() if query in node_data.get('node_name', '').lower()]
 
 def upstream_output_string(nodes: Dict[str, Dict], node_name: str) -> str:
     """Generate a string representation of upstream dependencies."""
@@ -86,10 +90,11 @@ def upstream_output_string(nodes: Dict[str, Dict], node_name: str) -> str:
 def get_graph_as_string(nodes: Dict[str, Dict]) -> str:
     """Generate a string representation of the graph."""
     edges = []
-    for node_key, node_value in nodes.items():
-        outgoing_edges = node_value.get('outgoing_edges', [])
+    for node_data in nodes.values():
+        node_name = node_data.get('node_name')
+        outgoing_edges = node_data.get('outgoing_edges', [])
         for edge in outgoing_edges:
-            edges.append(f"{node_key}-->{edge}")
+            edges.append(f"{node_name}-->{edge}")
     return "; ".join(edges)
 
 if __name__ == '__main__':
