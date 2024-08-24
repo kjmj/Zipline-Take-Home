@@ -90,8 +90,9 @@
           x-show="clicked"
           class="mb-4 p-2 bg-white border rounded-lg mt-4 shadow-sm"
         >
-          Upstream Dependencies for
-          <span x-text="clicked" class="font-bold"></span>
+          Node
+          <span x-text="clicked" class="font-bold text-blue-600"></span>
+          Upstream Dependencies
           <pre id="mermaid-graph"></pre>
         </div>
       </div>
@@ -103,12 +104,14 @@
       >
         <button
           @click="nodeDetails = ''"
-          class="absolute top-4 right-4 w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center hover:bg-gray-400 focus:outline-none mb-2"
+          class="absolute top-4 right-4 w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center hover:bg-gray-400 focus:outline-none"
         >
           <span class="text-xl text-gray-700">×</span>
         </button>
         <div class="text-lg font-bold mb-2">
-          Node Details for <span x-text="nodeDetails"></span>
+          Node
+          <span x-text="nodeDetails" class="text-blue-600"></span>
+          Information
         </div>
         <div
           id="node-details"
