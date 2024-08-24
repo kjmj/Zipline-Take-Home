@@ -31,9 +31,11 @@
             node.setAttribute("hx-target", "#node-details");
             htmx.process(node);
 
-            node.addEventListener("click", (event) => {
-              alpineData.nodeDetails = nodeName;
-            });
+            if (alpineData) {
+              node.addEventListener("click", (event) => {
+                alpineData.nodeDetails = nodeName;
+              });
+            }
           });
         });
       }
@@ -54,6 +56,15 @@
       class="flex flex-grow p-4 max-w-4xl mx-auto"
     >
       <div class="relative flex-grow">
+        <div class="mb-4 p-2">
+          Full Graph
+          <pre
+            class="mermaid"
+            hx-get="/graph"
+            hx-trigger="load"
+            @htmx:after-request.camel="afterRequest($event, 'full-mermaid-graph')"
+          ></pre>
+        </div>
         <input
           x-model="query"
           placeholder="Search"
