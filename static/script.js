@@ -36,13 +36,23 @@ function showDetailSidebar(nodeName, alpineData) {
 
 function showUpstreamGraph(nodeName, alpineData) {
   alpineData.clicked = nodeName;
-  htmx.ajax("GET", `/upstream/${nodeName}`, "#mermaid-graph").then(() => {
-    reRenderMermaidGraph("mermaid-graph", alpineData);
-    addClickListenersToNodes(alpineData, "mermaid-graph");
-  });
+  const depth = alpineData.selectedDepth || 1;
+  if (nodeName) {
+    htmx
+      .ajax("GET", `/upstream/${nodeName}?depth=${depth}`, "#mermaid-graph")
+      .then(() => {
+        reRenderMermaidGraph("mermaid-graph", alpineData);
+        addClickListenersToNodes(alpineData, "mermaid-graph");
+      });
+  }
 }
 
 function showAsLRGraph(event) {
   let response = event.detail.xhr.responseText;
   event.detail.target.innerHTML = "graph LR; " + response;
+}
+
+function pluralize(word, countStr) {
+  const count = parseInt(countStr, 10); // Convert the string to a number
+  return count === 1 ? word : word + "s";
 }

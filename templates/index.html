@@ -20,21 +20,38 @@
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 
     <div
-      x-data="{ query: '', results: [], clicked: '', nodeDetails: '', focused: false }"
+      x-data="{ selectedDepth: 1, query: '', results: [], clicked: '', nodeDetails: '', focused: false, pluralize(word, count) {
+        return count === 1 ? word : word + 's';
+      } }"
       class="flex flex-grow p-4 max-w-4xl mx-auto"
     >
       <div class="relative flex-grow">
-        <input
-          x-model="query"
-          placeholder="Search for a node in the full graph"
-          hx-trigger="click,keyup delay:200ms"
-          x-bind:hx-get="`/search?query=${query}`"
-          x-effect="query; htmx.process($el);"
-          @htmx:after-request.camel="results = JSON.parse(event.detail.xhr.responseText); htmx.process($el);"
-          @focus="focused = true"
-          @blur="setTimeout(() => focused = false, 200)"
-          class="w-full p-2 border rounded-lg bg-white shadow-sm"
-        />
+        <div class="flex">
+          <select
+            x-model="selectedDepth"
+            @change="showUpstreamGraph(clicked, $data)"
+            class="p-2 border rounded-l-lg bg-white shadow-sm"
+          >
+            <option value="0">0 Level</option>
+            <option value="1">1 Level</option>
+            <option value="2">2 Levels</option>
+            <option value="3">3 Levels</option>
+            <option value="4">4 Levels</option>
+            <option value="5">5 Levels</option>
+          </select>
+
+          <input
+            x-model="query"
+            placeholder="Search for a node in the full graph"
+            hx-trigger="focus,keyup delay:200ms"
+            x-bind:hx-get="`/search?query=${query}`"
+            x-effect="query; htmx.process($el);"
+            @htmx:after-request.camel="results = JSON.parse(event.detail.xhr.responseText); htmx.process($el);"
+            @focus="focused = true"
+            @blur="setTimeout(() => focused = false, 200)"
+            class="w-full p-2 border rounded-r-lg bg-white shadow-sm"
+          />
+        </div>
 
         <div
           id="results"
@@ -45,7 +62,7 @@
           <template x-for="result in results" :key="result">
             <div
               x-text="result"
-              @click="showUpstreamGraph(result, $data); focused = false"
+              @click="showUpstreamGraph(result, $data); focused = false; query = result;"
               hx-trigger="click"
               x-init="htmx.process($el)"
               class="px-4 py-2 cursor-pointer hover:bg-gray-100"
@@ -71,9 +88,12 @@
           class="mb-4 p-2 bg-white border rounded-lg mt-4 shadow-sm"
         >
           <div class="text-lg font-bold">
-            Node
+            Upstream Dependencies of Node
             <span x-text="clicked" class="font-bold text-blue-600"></span>
-            Upstream Dependencies
+            (
+            <span x-text="selectedDepth" class="font-bold text-blue-600"></span>
+            <span x-text="pluralize('level', selectedDepth)"></span>
+            )
           </div>
           <div>Click on a node to view more info</div>
           <pre id="mermaid-graph"></pre>
