@@ -36,7 +36,7 @@
         handleFirstResultSelection() {
           if (this.searchResults.length > 0) {
             this.searchQuery = this.searchResults[0];
-            this.renderUpstreamGraph(this.searchQuery, $data);
+            renderUpstreamGraph(this.searchQuery, $data);
             this.isFocused = false;
           }
         }
