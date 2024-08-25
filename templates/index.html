@@ -9,7 +9,10 @@
       src="{{ url_for('static', filename='libraries/alpinejs@3.x.x.min.js') }}"
     ></script>
     <script src="{{ url_for('static', filename='libraries/htmx.org@2.0.2.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='libraries/mermaid@11.0.2.min.js') }}"></script>
+    <script
+      defer
+      src="{{ url_for('static', filename='libraries/mermaid@11.0.2.min.js') }}"
+    ></script>
     <script src="{{ url_for('static', filename='libraries/tailwindcss@3.4.5.min.js') }}"></script>
   </head>
   <body class="bg-gray-100 font-sans flex">
@@ -17,7 +20,7 @@
 
     <div
       x-data="{
-        selectedDepth: 1,
+        selectedDepth: 3,
         searchQuery: '',
         searchResults: [],
         selectedNode: '',

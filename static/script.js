@@ -36,7 +36,7 @@ function showDetailSidebar(nodeName, alpineData) {
 
 function renderUpstreamGraph(nodeName, alpineData) {
   alpineData.selectedNode = nodeName;
-  const depth = alpineData.selectedDepth || 1;
+  const depth = alpineData.selectedDepth || 3;
   if (nodeName) {
     htmx
       .ajax(
