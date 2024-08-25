@@ -1,15 +1,15 @@
-# Project Name
+# Build System Visualization
 
 ## Overview
 
-This project is a Python-based application. To get started, you'll need to set up a virtual environment and install the necessary dependencies before running the application.
+This project is a full-stack application designed to visualize a build system as a Directed Acyclic Graph (DAG). The application includes features for node search, graph visualization, and detailed node information display. It uses Alpine.js and HTMX for interactivity, Flask for backend services, and Tailwind CSS for styling.
 
 ## Prerequisites
 
-Before you begin, make sure you have the following software installed:
+Before you begin, ensure you have the following installed:
 
-- **Python 3.6+**: You can download it from [python.org](https://www.python.org/downloads/).
-- **pip3**: This is the package installer for Python, typically included with Python. Check if pip is installed by running:
+- **Python 3.6+**: Download from [python.org](https://www.python.org/downloads/).
+- **pip3**: Included with Python. Verify installation by running:
 
   ```bash
   pip3 --version
@@ -17,22 +17,22 @@ Before you begin, make sure you have the following software installed:
 
 ## Getting Started
 
-Follow these steps to set up the project on your local machine:
+To set up the project on your local machine, follow these steps:
 
-1. **Clone the Repository**: Start by cloning the project repository to your local machine.
+1. **Clone the Repository**: Clone the project repository to your local machine.
 
    ```bash
-   git clone <repository-url>
-   cd <repository-directory>
+   git clone https://github.com/kjmj/Zipline-Take-Home.git
+   cd Zipline-Take-Home
    ```
 
-2. **Create a Virtual Environment**: In your project directory, create a virtual environment to manage dependencies.
+2. **Create a Virtual Environment**: In your project directory, create a virtual environment.
 
    ```bash
    python3 -m venv venv
    ```
 
-3. **Activate the Virtual Environment**: Once the virtual environment is created, activate it:
+3. **Activate the Virtual Environment**: Activate it as follows:
 
    - **On Windows**:
 
@@ -52,13 +52,25 @@ Follow these steps to set up the project on your local machine:
    pip3 install -r requirements.txt
    ```
 
-5. **Run the Project**: After installing all dependencies, you can start the project by running:
+5. **Graph Data**: The `graphs` folder contains JSON files representing various graphs. These files will be read by the Flask server and used to generate the visualizations on the frontend. The default graph file is `graph1.json`, but you can specify other graph files by changing the `GRAPH_FILENAME` variable in `app.py`.
+
+6. **Run the Application**: Start the Flask server to run the application.
 
    ```bash
    python3 app.py
    ```
 
-## Additional Notes
+7. **Open in Browser**: Navigate to `http://127.0.0.1:5000` in your browser to view the application.
 
-- Make sure to activate the virtual environment each time you work on this project.
-- If you encounter issues, check that all dependencies in `requirements.txt` are installed correctly.
+## Testing Different Graphs
+
+You can test different graph files by placing them in the `graphs` folder and updating the `GRAPH_FILENAME` variable in `app.py` to the desired file name (excluding the `.json` extension). For example, to use `graph2.json`, set:
+
+```python
+GRAPH_FILENAME = 'graph2'
+```
+
+## Notes
+
+- Ensure the virtual environment is activated when working on this project.
+- If you encounter issues, verify that all dependencies are installed and the Flask server is correctly serving the graph data.
