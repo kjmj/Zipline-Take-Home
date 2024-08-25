@@ -38,6 +38,7 @@
             this.searchQuery = this.searchResults[0];
             renderUpstreamGraph(this.searchQuery, $data);
             this.isFocused = false;
+            this.$refs.searchInput.blur();
           }
         }
       }"
@@ -71,6 +72,7 @@
           </select>
 
           <input
+            x-ref="searchInput"
             x-model="searchQuery"
             placeholder="Search for a node in the full graph"
             hx-trigger="focus,keyup delay:200ms"
