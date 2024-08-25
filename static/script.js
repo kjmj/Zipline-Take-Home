@@ -42,7 +42,9 @@ function renderUpstreamGraph(nodeName, alpineData) {
     htmx
       .ajax(
         "GET",
-        `/upstream/${nodeName}${depth !== "" ? `?depth=${depth}` : ""}`,
+        `/upstream/${nodeName}${
+          depth !== "" && depth !== null ? `?depth=${depth}` : ""
+        }`,
         "#upstream-mermaid-graph"
       )
       .then(() => {
