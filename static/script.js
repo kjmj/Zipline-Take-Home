@@ -9,7 +9,7 @@ function reRenderMermaidGraph(eltId) {
   mermaid.contentLoaded();
 }
 
-function addClickListenersToNodes(alpineData, id) {
+function addClickListenersToNodes(id, alpineData) {
   setTimeout(() => {
     document
       .getElementById(id)
@@ -28,10 +28,11 @@ function addClickListenersToNodes(alpineData, id) {
   });
 }
 
-function showDetailSidebar(nodeName, alpineData) {
-  alpineData.selectedNode = nodeName;
-  alpineData.nodeDetails = nodeName;
-  htmx.ajax("GET", `/nodes/${nodeName}`, "#node-details-content");
+function renderFullMermaidGraph(alpineData) {
+  htmx.ajax("GET", "/graph", "#full-mermaid-graph").then(() => {
+    reRenderMermaidGraph("full-mermaid-graph", alpineData);
+    addClickListenersToNodes("full-mermaid-graph", alpineData);
+  });
 }
 
 function renderUpstreamGraph(nodeName, alpineData) {
@@ -46,17 +47,18 @@ function renderUpstreamGraph(nodeName, alpineData) {
       )
       .then(() => {
         reRenderMermaidGraph("upstream-mermaid-graph", alpineData);
-        addClickListenersToNodes(alpineData, "upstream-mermaid-graph");
+        addClickListenersToNodes("upstream-mermaid-graph", alpineData);
       });
   }
+}
+
+function showDetailSidebar(nodeName, alpineData) {
+  alpineData.selectedNode = nodeName;
+  alpineData.nodeDetails = nodeName;
+  htmx.ajax("GET", `/nodes/${nodeName}`, "#node-details-content");
 }
 
 function showAsLRGraph(event) {
   let response = event.detail.xhr.responseText;
   event.detail.target.innerHTML = "graph LR; " + response;
-}
-
-function pluralize(word, countStr) {
-  const count = parseInt(countStr, 10); // Convert the string to a number
-  return count === 1 ? word : word + "s";
 }
