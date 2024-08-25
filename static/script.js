@@ -37,12 +37,12 @@ function renderFullMermaidGraph(alpineData) {
 
 function renderUpstreamGraph(nodeName, alpineData) {
   alpineData.selectedNode = nodeName;
-  const depth = alpineData.selectedDepth || 3;
+  const depth = alpineData.selectedDepth;
   if (nodeName) {
     htmx
       .ajax(
         "GET",
-        `/upstream/${nodeName}?depth=${depth}`,
+        `/upstream/${nodeName}${depth !== "" ? `?depth=${depth}` : ""}`,
         "#upstream-mermaid-graph"
       )
       .then(() => {

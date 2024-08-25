@@ -34,7 +34,8 @@ def node_details_endpoint(node_name: str) -> str:
 @app.route('/upstream/<node_name>', methods=['GET'])
 def upstream_dependencies_endpoint(node_name: str) -> str:
     """Get upstream dependencies of a node."""
-    max_depth = int(request.args.get('depth', float('inf')))
+    depth = request.args.get('depth', None)
+    max_depth = int(depth) if depth is not None else float('inf')
     output_string = generate_upstream_dependencies_string(graph_nodes, node_name, max_depth)
     return output_string
 
@@ -61,7 +62,7 @@ def get_upstream_dependencies(graph_nodes: Dict[str, Dict], target_node_name: st
     upstream_dependencies = set()
 
     def dfs(current_node_name: str, path: List[Tuple[str, str]], current_depth: int):
-        if current_depth >= max_depth:
+        if max_depth != float('inf') and current_depth >= max_depth:
             return
         if current_node_name in reversed_dag:
             for predecessor_name in reversed_dag[current_node_name]:
