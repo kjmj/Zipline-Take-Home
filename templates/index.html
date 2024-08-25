@@ -22,7 +22,7 @@
 
     <div
       x-data="{
-        selectedDepth: '',
+        selectedDepth: null,
         searchQuery: '',
         searchResults: [],
         selectedNode: '',
@@ -128,10 +128,15 @@
           <div class="text-lg font-bold">
             Upstream Dependencies of Node
             <span x-text="selectedNode" class="font-bold text-blue-600"></span>
-            (
-            <span x-text="selectedDepth" class="font-bold text-blue-600"></span>
-            <span x-text="pluralize('level', selectedDepth)"></span>
-            )
+            <span x-show="selectedDepth !== null">
+              (
+              <span
+                x-text="selectedDepth"
+                class="font-bold text-blue-600"
+              ></span>
+              <span x-text="pluralize('level', selectedDepth)"></span>
+              )</span
+            >
           </div>
           <p class="text-gray-600 text-sm mt-2">
             This section displays the upstream dependencies of the selected
